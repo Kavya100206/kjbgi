@@ -11,7 +11,16 @@ stack:    docker compose build
 
 ## 2. Must-have test cases
 
-### Vintage selection (backend/tests/test_vintage.py)
+### Pairing (backend/tests/test_pairing.py)
+Verify `domain/pairing.py` — hourly actual = mean(FUELHH H:00, H:30) per A7:
+- Both half-hours present → `actual_hourly = mean(gen_00, gen_30)` exact.
+- H:00 missing → hour excluded, counted in coverage gap.
+- H:30 missing → hour excluded, counted in coverage gap.
+- Both missing → hour excluded.
+- Boundary hours: 00:00 (midnight) and 23:00 produce correct means.
+- A full 24-hour day with complete data returns exactly 24 rows with `coverage_ok=True`.
+- A day with one gap returns 23 rows and reports 1 coverage gap.
+
 - Forecast published exactly at cutoff is **included**; one second later is **excluded**.
 - Several vintages for one target: the latest ≤ cutoff wins.
 - No vintage ≤ cutoff: target is dropped and counted in coverage, not filled.
@@ -48,7 +57,10 @@ errors = [−2, +2, −3] → MAE = 7/3 ≈ 2.3333, RMSE = sqrt(17/3) ≈ 2.3805
 - A view renders loading, error, empty and data states from mocked responses.
 
 ## 3. Independent cross-check (T2.5)
-A separate script written in plain pandas, not importing `app.domain`, recomputes headline metrics for all January at cutoff 09:00. Output compared to the API/summary values with tolerance 1e-6. Paste both outputs in DECISIONS.md.
+A separate script written in plain pandas, not importing `app.domain`, recomputes headline metrics for all January at cutoff 09:00 using:
+1. **Option C pairing** (A7: mean of H:00 and H:30 FUELHH) — must match app API/summary to 1e-6.
+2. **Option A pairing** (H:00 actual only, no averaging) — compute MAE and bias; report the difference from Option C.
+Paste both outputs (Option C and sensitivity diff) in DECISIONS.md D-004.
 
 ## 4. Data sanity checks (on snapshot)
 - Actuals: 1,488 periods expected for 31 days; list any gaps.

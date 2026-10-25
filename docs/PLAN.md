@@ -14,6 +14,7 @@ Boring, testable, small. Heavy work happens offline (ingest). The runtime app se
   backend/app/
     config.py        window, default cutoff, constants
     data/loader.py   read + validate snapshot into typed frames
+    domain/pairing.py  A7 hourly pairing: mean two 30-min FUELHH halves per target hour
     domain/vintage.py  select forecast-at-cutoff, compute horizons
     domain/metrics.py  MAE, RMSE, bias, nMAE, quantiles (pure)
     domain/risk.py     empirical error bands (prior days only)
@@ -44,7 +45,7 @@ Boring, testable, small. Heavy work happens offline (ingest). The runtime app se
 |---|---|---|
 | GET /api/health | – | status, version |
 | GET /api/meta | – | window, ingest time, row counts, default cutoff, list of delivery dates |
-| GET /api/forecast/day | date, cutoff_hour | 48 rows: start_time, forecast_mw, forecast_publish_time, forecast_age_h, actual_mw? ; day summary (peak, mean, min, n_missing) |
+| GET /api/forecast/day | date, cutoff_hour | **24 rows** (one per WINDFOR target hour): start_time, forecast_mw, forecast_publish_time, forecast_age_h, actual_mw? (hourly mean per A7); day summary (peak, mean, min, n_missing, selected_vintage_publish_time) |
 | GET /api/forecast/revisions | target (start_time) or date | vintages: publish_time, forecast_mw, horizon_h, plus the actual |
 | GET /api/accuracy/summary | from, to, cutoff_hour | MAE, RMSE, bias, nMAE, P90/P95 abs error, worst over-forecast, n, coverage |
 | GET /api/accuracy/by-horizon | from, to | bucketed metrics over **all vintages** (no cutoff_hour — purpose is to show how accuracy decays with lead time; distinct from all other accuracy endpoints which use only the forecast-at-cutoff vintage) |
@@ -57,6 +58,8 @@ Validate params (dates within window, cutoff 0–23, from ≤ to) with clear 422
 
 ## 5. Key technical decisions (record the final answers in DECISIONS.md)
 - **Snapshot not live calls.** Deterministic, fast, no outage risk. A `--refresh` flag in ingest keeps it repeatable and honest about provenance.
+- **Snapshot format.** Plain CSV.gz in git (`actuals.csv.gz`, `forecasts.csv.gz`). Total estimated size ~140 KB gzipped — well within git limits, no LFS needed.
+- **Ingest strategy.** FUELHH: `settlementDateFrom/To`, one request for the full window (32 days, 1,536 rows). WINDFOR: `publishDateTimeFrom/To` only (settlementDate params return live forecast, not historical), chunked at 7-day windows with 0.5 s delay between requests.
 - **Data engine.** Start with pandas + numpy. Measure the Vercel function bundle; limit is 250 MB unzipped. If it is too big, switch runtime analytics to plain numpy or precompute per-cutoff aggregates (24 cutoffs × small tables) at build time.
 - **Hosting.** Vercel monorepo: frontend as static build, FastAPI as a Python function at `/api/*` via `vercel.json` rewrites. Heroku container deploy (single multi-stage Dockerfile serving both) is the fallback. **Decision rule for T0.6 (hard time-box 30 min):** if the Vercel spike (hello-world FastAPI + pandas import + bundle size check) fails for any reason OR the compressed bundle exceeds Vercel's documented limit, stop and switch to the Heroku container path immediately. Do not keep fighting Vercel. Record both the documented limits and measured sizes in DECISIONS.md.
 - **Docker.** `docker compose up` runs backend + frontend (nginx proxying /api). Local parity with production routes.
@@ -85,4 +88,5 @@ Cut order if time is short: FR-9 → FR-7 polish → Playwright → hypothesis t
 | Vercel Python bundle too large / cold start slow | Measure early (Phase 0 spike), fall back to precompute or Heroku container |
 | Ambiguity in "decisions in January" | A1/A2 documented, configurable, explained in Method page and video |
 | Scope creep | SPEC priorities, cut order above, TASKS discipline |
-| Chart legibility with 1,488 points × vintages | Aggregate/limit revisions chart to selected target or day; downsample only in the view, never in metrics |
+| Chart legibility with 744 points × vintages | Aggregate/limit revisions chart to selected target or day; downsample only in the view, never in metrics |
+| WINDFOR hourly vs FUELHH 30-min granularity | A7 pairing rule: mean two FUELHH halves per hour; exclude if either missing; sensitivity check in T2.5 |
