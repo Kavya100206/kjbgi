@@ -13,12 +13,11 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.cross_check import run_cross_check  # noqa: E402
-
 from app.data.loader import load_actuals, load_forecasts  # noqa: E402
 from app.domain.metrics import compute_metrics_dict  # noqa: E402
 from app.domain.pairing import pair_forecast_and_actual  # noqa: E402
 from app.domain.vintage import select_forecasts_at_cutoff  # noqa: E402
+from scripts.cross_check import run_cross_check  # noqa: E402
 
 
 def test_cross_check_matches_app_domain_to_1e6():
