@@ -34,8 +34,8 @@ Base URL (open, no key): `https://data.elexon.co.uk/bmrs/api/v1`.
 - `startTime`: UTC, **HOURLY resolution** (`:00:00` only — not 30-minute). **This differs from FUELHH.** See A7 pairing rule in SPEC.
 - `generation`: integer, MW. We cannot confirm from source data whether this is an hour-average or an instantaneous value at the boundary hour. This uncertainty is documented in SPEC A7 and the Method page.
 - **Publish cadence:** 8 times per day. Observed clock times: **02:30, 04:30, 07:30, 09:30, 11:30, 15:30, 18:30, 22:30 UTC**. One exception observed in the January window: one day had 12:25 instead of 11:30. **Do not hardcode these clock times** in ingest or tests — use the observed `publishTime` values from the API.
-- **Targets per vintage:** ~73 hourly periods spanning roughly −3 h to +72 h around the publish time (~3-day window).
-- **Horizon range observed:** approximately 3 h to 75 h. Use buckets: `<12, 12–24, 24–36, 36–48, 48–60, 60+` hours.
+- **Horizon range observed:** forward forecasts range from **0.5 h to 66.5 h**. In addition, **20.6% of WINDFOR rows (4,081 records) are retrospective backcasts (`horizon < 0`)** spanning up to −25.5 h before publish time. Decision-time vintage selection automatically excludes retrospective records because for any target hour t on delivery day D, `cutoff(t) = D-1 @ cutoff_hour < t`, so `publishTime <= cutoff < t` guarantees `horizon_h = startTime − publishTime > 0`. The `/api/accuracy/by-horizon` endpoint must explicitly filter out `horizon < 0` and report the count of excluded retrospective records.
+- **Horizon buckets to use:** `<12, 12–24, 24–36, 36–48, 48–60, 60–67` hours.
 - **Query params to use:** `publishDateTimeFrom` / `publishDateTimeTo` (ISO 8601 UTC). **Do NOT use `settlementDateFrom/To` for historical WINDFOR** — that parameter returns the current live forecast, not historical data.
 - The `/stream` endpoint returns a **bare JSON array**. The non-stream `/datasets/WINDFOR` endpoint returns `{"data": [...]}`.
 - **Historical depth confirmed:** data exists back to at least 2025-12-29T02:30:00Z. Jan 1 targets have a vintage published 2025-12-31T07:30:00Z, which is before the 09:00 cutoff. Jan 1 at 09:00 cutoff = **full coverage** (24 hours).
@@ -45,9 +45,9 @@ Base URL (open, no key): `https://data.elexon.co.uk/bmrs/api/v1`.
 ### Snapshot size estimate
 | Dataset | Rows | Raw JSON | Gzipped |
 |---|---|---|---|
-| FUELHH (Jan 1–Feb 1) | 1,536 | 272 KB | ~19 KB |
-| WINDFOR (Dec 29–Jan 31) | 19,856 | 2.2 MB | ~119 KB |
-| **Total** | **21,392** | **~2.5 MB** | **~140 KB** |
+| FUELHH (Jan 1–Feb 1) | 1,536 | 272 KB | ~15 KB |
+| WINDFOR (Dec 29–Jan 31) | 19,856 | 2.2 MB | ~102 KB |
+| **Total** | **21,392** | **~2.5 MB** | **~114 KB** |
 
 Store as `actuals.csv.gz` and `forecasts.csv.gz` — plain CSV.gz is adequate and keeps the repo tiny.
 
@@ -57,6 +57,7 @@ Store as `actuals.csv.gz` and `forecasts.csv.gz` — plain CSV.gz is adequate an
 - If either half-hour of FUELHH is missing for a target hour, that hour is excluded from metrics (A7).
 - Zero or very low actuals make percentage errors unstable, so use normalised MAE (divide by mean actual over the window) instead of MAPE.
 - We cannot confirm whether WINDFOR `generation` is an hour-average or instantaneous value. The sensitivity check (Option A vs Option C pairing) is documented in DECISIONS.md D-004.
+- **By-hour lead-time confounding:** at the 09:00 UTC cutoff, the decision-time forecast lead time for delivery day D's hours ranges from **~16.5 h** (for 00:00Z delivery) to **~39.5 h** (for 23:00Z delivery). Because hour-of-day is naturally confounded with lead time (later delivery hours always have longer lead times from a fixed morning cutoff), the by-hour error view reflects both diurnal wind patterns and forecast decay. The UI must state this confounding note directly next to the by-hour chart.
 
 ## Metric definitions (n = number of target hours with both forecast-at-cutoff and paired actual)
 - error_i = forecast_i − actual_i (actual_i = hourly mean per A7)
@@ -67,7 +68,7 @@ Store as `actuals.csv.gz` and `forecasts.csv.gz` — plain CSV.gz is adequate an
 - Pxx absolute error = xx-th percentile of |error_i| (linear interpolation; document it)
 - Over-forecast tail: P90 of max(error_i, 0) over all periods, and worst single over-forecast
 - Coverage = n / (number of target hours in range); for full January = n / 744
-- By-horizon view: evaluate **every vintage in the snapshot** regardless of cutoff (the `/api/accuracy/by-horizon` endpoint takes no `cutoff_hour` parameter). Bucket by horizon_h using `<12, 12–24, 24–36, 36–48, 48–60, 60+`. Shows how accuracy decays with lead time. Contrast with the summary, by-hour, daily and distribution endpoints, which use only the forecast-at-cutoff vintage for each target.
+- By-horizon view: evaluate **every vintage in the snapshot** regardless of cutoff (the `/api/accuracy/by-horizon` endpoint takes no `cutoff_hour` parameter). Exclude retrospective backcasts (`horizon < 0`) and report the excluded count. Bucket forward forecasts by horizon_h using `<12, 12–24, 24–36, 36–48, 48–60, 60–67`. Shows how accuracy decays with lead time. Contrast with the summary, by-hour, daily and distribution endpoints, which use only the forecast-at-cutoff vintage for each target.
 - Risk band for day D (FR-7): for each hour-of-day (or all periods pooled if sparse), take empirical quantiles of error from delivery days strictly before D at the same cutoff; band = forecast − q_hi … forecast − q_lo, clipped at ≥ 0 MW. State that this is empirical, not a guarantee.
 
 ## Glossary for the UI copy

@@ -1,5 +1,5 @@
 {
-  "ingested_at": "2026-10-27T08:56:31Z",
+  "ingested_at": "2026-10-27T09:08:24Z",
   "window": {
     "start": "2026-01-01",
     "end": "2026-01-31",
@@ -8,7 +8,7 @@
   "actuals": {
     "rows": 1536,
     "file": "actuals.csv.gz",
-    "size_bytes": 14811,
+    "size_bytes": 14799,
     "min_start_time": "2026-01-01T00:00:00Z",
     "max_start_time": "2026-02-01T23:30:00Z",
     "min_publish_time": "2026-01-01T00:30:00Z",
@@ -26,7 +26,7 @@
   "forecasts": {
     "rows": 19856,
     "file": "forecasts.csv.gz",
-    "size_bytes": 101681,
+    "size_bytes": 101667,
     "unique_vintages": 272,
     "min_publish_time": "2025-12-29T02:30:00Z",
     "max_publish_time": "2026-01-31T22:30:00Z",
@@ -39,5 +39,21 @@
       "generation"
     ]
   },
-  "total_compressed_size_kb": 113.8
+  "total_compressed_size_kb": 113.7,
+  "ingest_quality": {
+    "fuelhh": {
+      "fetched": 1536,
+      "valid": 1536,
+      "rejected": 0,
+      "duplicates_dropped": 0,
+      "kept": 1536
+    },
+    "windfor": {
+      "fetched": 19856,
+      "valid": 19856,
+      "rejected": 0,
+      "duplicates_dropped": 0,
+      "kept": 19856
+    }
+  }
 }

@@ -1,13 +1,14 @@
 """Ingest script for Elexon BMRS FUELHH (WIND) and WINDFOR datasets.
 
 Fetches data in 7-day chunks with polite delay and retry/backoff, validates records
-against Pydantic schemas, deduplicates per assumption A6, and writes compressed
-snapshots to disk with metadata.
+against Pydantic schemas, deduplicates per assumption A6, and writes byte-identical
+deterministic compressed snapshots (gzip mtime=0) to disk with metadata.
 """
 
 from __future__ import annotations
 
 import argparse
+import gzip
 import json
 import logging
 import pathlib
@@ -76,8 +77,21 @@ class WindforRecord(BaseModel):
     generation: int = Field(ge=0)
 
 
-FuelHHListAdapter = TypeAdapter(list[FuelHHRecord])
-WindforListAdapter = TypeAdapter(list[WindforRecord])
+FuelHHListAdapter: TypeAdapter[list[FuelHHRecord]] = TypeAdapter(list[FuelHHRecord])
+WindforListAdapter: TypeAdapter[list[WindforRecord]] = TypeAdapter(list[WindforRecord])
+
+
+# ── Deterministic Gzip Writer (mtime=0) ─────────────────────────────────────────
+
+
+def write_deterministic_csv_gz(df: pd.DataFrame, target_path: pathlib.Path) -> None:
+    """Write DataFrame to gzipped CSV with mtime=0 for byte-level reproducibility."""
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    with (
+        open(target_path, "wb") as f_out,
+        gzip.GzipFile(filename="", mode="wb", fileobj=f_out, mtime=0.0) as gz,
+    ):
+        df.to_csv(gz, index=False, lineterminator="\n", encoding="utf-8")
 
 
 # ── HTTP Client with Retry / Backoff ──────────────────────────────────────────
@@ -160,11 +174,13 @@ def fetch_fuelhh_actuals(
     end_date: date = ACTUALS_DATE_TO,
     chunk_days: int = INGEST_CHUNK_DAYS,
     delay_s: float = INGEST_DELAY_S,
-) -> pd.DataFrame:
+) -> tuple[pd.DataFrame, dict[str, int]]:
     """Fetch FUELHH wind actuals chunked by settlementDate, validated with Pydantic."""
     url = f"{ELEXON_BASE_URL}/datasets/FUELHH/stream"
     chunks = generate_date_chunks(start_date, end_date, chunk_days)
     all_records: list[dict[str, Any]] = []
+    total_fetched = 0
+    total_rejected = 0
 
     for i, (chunk_start, chunk_end) in enumerate(chunks):
         params = {
@@ -173,11 +189,25 @@ def fetch_fuelhh_actuals(
             "fuelType": "WIND",
         }
         raw_items = fetch_with_retry(client, url, params)
-        validated = FuelHHListAdapter.validate_python(raw_items)
+        total_fetched += len(raw_items)
+
+        chunk_valid: list[FuelHHRecord] = []
+        for raw in raw_items:
+            try:
+                item = FuelHHRecord.model_validate(raw)
+                chunk_valid.append(item)
+            except Exception as exc:
+                total_rejected += 1
+                logger.warning("Rejected FUELHH record: %s (error: %s)", raw, exc)
+
         logger.info(
-            "Chunk %d/%d: retrieved %d valid FUELHH records", i + 1, len(chunks), len(validated)
+            "Chunk %d/%d: retrieved %d valid FUELHH records (rejected %d)",
+            i + 1,
+            len(chunks),
+            len(chunk_valid),
+            total_rejected,
         )
-        for item in validated:
+        for item in chunk_valid:
             all_records.append(
                 {
                     "dataset": item.dataset,
@@ -199,11 +229,20 @@ def fetch_fuelhh_actuals(
     # Deduplicate exact duplicates (A6)
     initial_len = len(df)
     df = df.drop_duplicates(subset=["startTime", "fuelType"])
-    if len(df) < initial_len:
+    duplicates_dropped = initial_len - len(df)
+    if duplicates_dropped > 0:
         logger.info("Deduplicated FUELHH: %d -> %d rows", initial_len, len(df))
 
-    df = df.sort_values("startTime").reset_index(drop=True)
-    return df
+    # Deterministic sorting
+    df = df.sort_values(["startTime", "settlementPeriod"]).reset_index(drop=True)
+    stats = {
+        "fetched": total_fetched,
+        "valid": len(all_records),
+        "rejected": total_rejected,
+        "duplicates_dropped": duplicates_dropped,
+        "kept": len(df),
+    }
+    return df, stats
 
 
 def fetch_windfor_forecasts(
@@ -212,11 +251,13 @@ def fetch_windfor_forecasts(
     end_dt: datetime = FORECASTS_PUBLISH_TO,
     chunk_days: int = INGEST_CHUNK_DAYS,
     delay_s: float = INGEST_DELAY_S,
-) -> pd.DataFrame:
+) -> tuple[pd.DataFrame, dict[str, int]]:
     """Fetch WINDFOR wind forecasts chunked by publishDateTime, validated with Pydantic."""
     url = f"{ELEXON_BASE_URL}/datasets/WINDFOR/stream"
     chunks = generate_datetime_chunks(start_dt, end_dt, chunk_days)
     all_records: list[dict[str, Any]] = []
+    total_fetched = 0
+    total_rejected = 0
 
     for i, (chunk_start, chunk_end) in enumerate(chunks):
         params = {
@@ -224,11 +265,25 @@ def fetch_windfor_forecasts(
             "publishDateTimeTo": chunk_end.strftime("%Y-%m-%dT%H:%M:%SZ"),
         }
         raw_items = fetch_with_retry(client, url, params)
-        validated = WindforListAdapter.validate_python(raw_items)
+        total_fetched += len(raw_items)
+
+        chunk_valid: list[WindforRecord] = []
+        for raw in raw_items:
+            try:
+                item = WindforRecord.model_validate(raw)
+                chunk_valid.append(item)
+            except Exception as exc:
+                total_rejected += 1
+                logger.warning("Rejected WINDFOR record: %s (error: %s)", raw, exc)
+
         logger.info(
-            "Chunk %d/%d: retrieved %d valid WINDFOR records", i + 1, len(chunks), len(validated)
+            "Chunk %d/%d: retrieved %d valid WINDFOR records (rejected %d)",
+            i + 1,
+            len(chunks),
+            len(chunk_valid),
+            total_rejected,
         )
-        for item in validated:
+        for item in chunk_valid:
             all_records.append(
                 {
                     "dataset": item.dataset,
@@ -247,11 +302,20 @@ def fetch_windfor_forecasts(
     # Deduplicate exact duplicates on (publishTime, startTime)
     initial_len = len(df)
     df = df.drop_duplicates(subset=["publishTime", "startTime"])
-    if len(df) < initial_len:
+    duplicates_dropped = initial_len - len(df)
+    if duplicates_dropped > 0:
         logger.info("Deduplicated WINDFOR: %d -> %d rows", initial_len, len(df))
 
+    # Deterministic sorting
     df = df.sort_values(["publishTime", "startTime"]).reset_index(drop=True)
-    return df
+    stats = {
+        "fetched": total_fetched,
+        "valid": len(all_records),
+        "rejected": total_rejected,
+        "duplicates_dropped": duplicates_dropped,
+        "kept": len(df),
+    }
+    return df, stats
 
 
 # ── Snapshot Writer ───────────────────────────────────────────────────────────
@@ -261,22 +325,23 @@ def write_snapshot(
     actuals_df: pd.DataFrame,
     forecasts_df: pd.DataFrame,
     snapshot_dir: pathlib.Path = SNAPSHOT_DIR,
+    quality_stats: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Write actuals.csv.gz, forecasts.csv.gz, and meta.json to disk."""
+    """Write actuals.csv.gz, forecasts.csv.gz, and meta.json with mtime=0."""
     snapshot_dir.mkdir(parents=True, exist_ok=True)
 
     actuals_file = snapshot_dir / "actuals.csv.gz"
     forecasts_file = snapshot_dir / "forecasts.csv.gz"
     meta_file = snapshot_dir / "meta.json"
 
-    actuals_df.to_csv(actuals_file, index=False, compression="gzip")
-    forecasts_df.to_csv(forecasts_file, index=False, compression="gzip")
+    write_deterministic_csv_gz(actuals_df, actuals_file)
+    write_deterministic_csv_gz(forecasts_df, forecasts_file)
 
     actuals_size = actuals_file.stat().st_size
     forecasts_size = forecasts_file.stat().st_size
     total_size_kb = (actuals_size + forecasts_size) / 1024
 
-    meta = {
+    meta: dict[str, Any] = {
         "ingested_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "window": {
             "start": WINDOW_START.isoformat(),
@@ -306,6 +371,9 @@ def write_snapshot(
         },
         "total_compressed_size_kb": round(total_size_kb, 1),
     }
+
+    if quality_stats:
+        meta["ingest_quality"] = quality_stats
 
     with open(meta_file, "w", encoding="utf-8") as f:
         json.dump(meta, f, indent=2)
@@ -340,10 +408,15 @@ def run_ingest(refresh: bool = False, target_dir: pathlib.Path = SNAPSHOT_DIR) -
 
     logger.info("Starting data ingest (refresh=%s, target_dir=%s)...", refresh, target_dir)
     with httpx.Client(timeout=60.0) as client:
-        actuals_df = fetch_fuelhh_actuals(client)
-        forecasts_df = fetch_windfor_forecasts(client)
+        actuals_df, actuals_stats = fetch_fuelhh_actuals(client)
+        forecasts_df, forecasts_stats = fetch_windfor_forecasts(client)
 
-    meta = write_snapshot(actuals_df, forecasts_df, target_dir)
+    quality_stats = {
+        "fuelhh": actuals_stats,
+        "windfor": forecasts_stats,
+    }
+
+    meta = write_snapshot(actuals_df, forecasts_df, target_dir, quality_stats=quality_stats)
     return meta
 
 
