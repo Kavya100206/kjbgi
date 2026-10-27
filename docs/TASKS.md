@@ -24,9 +24,9 @@
 - [x] T2.5 Independent cross-check: a separate script (plain pandas, different code path) recomputes the headline metrics for Jan at 09:00 cutoff using Option C pairing AND Option A (H:00 only) pairing. Done when: Option C matches app metrics to 1e-6; sensitivity diff (MAE and bias difference between A and C) pasted into DECISIONS.md.
 
 ## Phase 3 — API (≈1.5h)
-- [ ] T3.1 Routers + Pydantic models for all endpoints in PLAN §4 with validation. Done when: OpenAPI complete, 422s clear.
-- [ ] T3.2 API tests (TestClient) incl. acceptance criterion 3 (day 2026-01-15, 09:00, 24 rows, all publish_times ≤ 2026-01-14T09:00Z). Done when: green.
-- [ ] T3.3 CORS, error handler, caching headers for static data. Done when: manual curl checks pasted.
+- [x] T3.1 Routers + Pydantic models for all endpoints in PLAN §4 with validation. Done when: OpenAPI complete, 422s clear.
+- [x] T3.2 API tests (TestClient) incl. acceptance criterion 3 (day 2026-01-15, 09:00, 24 rows, all publish_times ≤ 2026-01-14T09:00Z). Done when: green.
+- [x] T3.3 CORS, error handler, caching headers for static data. Done when: manual curl checks pasted.
 
 ## Phase 4 — Frontend (≈4h)
 - [ ] T4.1 Design tokens, fonts, layout shell, ControlStrip with URL-synced state. Done when: reload keeps state, 375px and 1280px screenshots OK.
