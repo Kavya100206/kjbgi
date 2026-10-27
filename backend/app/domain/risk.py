@@ -103,6 +103,7 @@ def compute_risk_band(
 
             q_lo = float(np.percentile(err_sample, q_lo_pct))
             q_hi = float(np.percentile(err_sample, q_hi_pct))
+            bias_val = round(float(np.mean(err_sample)), 1)
 
             # actual = forecast - error
             band_lo = max(0.0, round(fc_val - q_hi, 1))
@@ -113,6 +114,7 @@ def compute_risk_band(
             band_lo = round(fc_val, 1)
             band_hi = round(fc_val, 1)
             cushion = 0.0
+            bias_val = 0.0
 
         hours_result.append(
             {
@@ -122,8 +124,11 @@ def compute_risk_band(
                 "band_lo_mw": band_lo,
                 "band_hi_mw": band_hi,
                 "cushion_mw": cushion,
+                "bias_used_mw": bias_val,
             }
         )
+
+    overall_bias = round(float(np.mean(prior_errors)), 1) if len(prior_errors) > 0 else 0.0
 
     return {
         "delivery_date": delivery_date.isoformat(),
@@ -131,5 +136,6 @@ def compute_risk_band(
         "confidence": confidence,
         "history_days_used": history_days_used,
         "is_fallback": is_fallback,
+        "bias_used_mw": overall_bias,
         "hours": hours_result,
     }

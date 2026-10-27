@@ -56,11 +56,13 @@ def test_proves_no_use_of_same_day_or_later_errors():
     # Verify results are 100% IDENTICAL
     assert res_clean["history_days_used"] == res_poisoned["history_days_used"] == 9  # Days 1..9
     assert res_clean["is_fallback"] == res_poisoned["is_fallback"] is False
+    assert res_clean["bias_used_mw"] == res_poisoned["bias_used_mw"] == 100.0
 
     for clean_h, poisoned_h in zip(res_clean["hours"], res_poisoned["hours"], strict=True):
         assert clean_h["band_lo_mw"] == poisoned_h["band_lo_mw"]
         assert clean_h["band_hi_mw"] == poisoned_h["band_hi_mw"]
         assert clean_h["cushion_mw"] == poisoned_h["cushion_mw"]
+        assert clean_h["bias_used_mw"] == poisoned_h["bias_used_mw"] == 100.0
 
 
 def test_fallback_flag_when_history_under_3_days():

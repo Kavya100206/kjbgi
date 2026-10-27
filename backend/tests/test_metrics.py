@@ -35,6 +35,9 @@ def test_hand_computed_fixture():
     assert res["bias_mw"] == 12.5
     assert res["mean_actual_mw"] == 237.5
     assert res["mean_forecast_mw"] == 250.0
+    assert math.isclose(res["error_std_mw"], math.sqrt(668.75), rel_tol=1e-3)
+    assert math.isclose(res["forecast_to_actual_ratio"], 250.0 / 237.5, rel_tol=1e-3)
+    assert math.isclose(res["bias_share_of_mse"], (12.5**2) / 825.0, rel_tol=1e-3)
     assert math.isclose(res["nmae_pct"], (22.5 / 237.5) * 100, rel_tol=1e-3)
     assert res["worst_over_forecast_mw"] == 50.0
 

@@ -9,5 +9,4 @@ sys.path.insert(0, str(ROOT_DIR / "backend"))
 
 from app.main import app  # noqa: E402
 
-# Export app for Vercel WSGI/ASGI handler
 __all__ = ["app"]

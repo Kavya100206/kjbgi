@@ -22,9 +22,31 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    from app.api.health import router as health_router
+    from fastapi import Request
+    from starlette.middleware.base import BaseHTTPMiddleware
 
+    class VercelRewriteMiddleware(BaseHTTPMiddleware):
+        async def dispatch(self, request: Request, call_next):
+            # If deployed on Vercel with rewrites, restore the original requested path
+            path = request.url.path
+            matched = request.headers.get("x-matched-path")
+            query_path = request.query_params.get("__path__")
+            if matched and matched != path and not matched.endswith(".py"):
+                request.scope["path"] = matched
+            elif query_path:
+                request.scope["path"] = "/api/" + query_path.lstrip("/")
+            return await call_next(request)
+
+    app.add_middleware(VercelRewriteMiddleware)
+
+    from app.api.health import router as health_router
+    from app.api.meta import router as meta_router
+
+    # Register under /api prefix and also root for direct routing
     app.include_router(health_router, prefix="/api")
+    app.include_router(health_router)
+    app.include_router(meta_router, prefix="/api")
+    app.include_router(meta_router)
 
     return app
 

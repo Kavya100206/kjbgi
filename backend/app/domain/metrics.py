@@ -59,9 +59,12 @@ def compute_metrics_dict(
             "mae_mw": None,
             "rmse_mw": None,
             "bias_mw": None,
+            "error_std_mw": None,
             "nmae_pct": None,
             "mean_actual_mw": None,
             "mean_forecast_mw": None,
+            "forecast_to_actual_ratio": None,
+            "bias_share_of_mse": None,
             "p50_abs_error_mw": None,
             "p90_abs_error_mw": None,
             "p95_abs_error_mw": None,
@@ -71,8 +74,10 @@ def compute_metrics_dict(
 
     abs_errors = np.abs(err_clean)
     mae = float(np.mean(abs_errors))
-    rmse = float(np.sqrt(np.mean(err_clean**2)))
+    mse = float(np.mean(err_clean**2))
+    rmse = float(np.sqrt(mse))
     bias = float(np.mean(err_clean))
+    error_std = float(np.std(err_clean, ddof=0))
     mean_act = float(np.mean(act_clean))
 
     # Normalized MAE: MAE / mean_actual (%)
@@ -88,10 +93,15 @@ def compute_metrics_dict(
     p90_over = float(np.percentile(over_errors, 90))
     worst_over = float(np.max(err_clean))
 
-    mean_fc: float | None = None
     if forecasts is not None:
         fc_arr = np.asarray(forecasts, dtype=float)[valid_mask]
-        mean_fc = round(float(np.mean(fc_arr)), 2)
+        mean_fc = float(np.mean(fc_arr))
+    else:
+        # Since error = forecast - actual, forecast = actual + error
+        mean_fc = float(np.mean(act_clean + err_clean))
+
+    ratio_fc_act = round(mean_fc / mean_act, 4) if mean_act > 0 else None
+    bias_share_mse = round((bias**2) / mse, 4) if mse > 0 else None
 
     return {
         "n": n,
@@ -100,9 +110,12 @@ def compute_metrics_dict(
         "mae_mw": round(mae, 2),
         "rmse_mw": round(rmse, 2),
         "bias_mw": round(bias, 2),
+        "error_std_mw": round(error_std, 2),
         "nmae_pct": nmae_pct,
         "mean_actual_mw": round(mean_act, 2),
-        "mean_forecast_mw": mean_fc,
+        "mean_forecast_mw": round(mean_fc, 2),
+        "forecast_to_actual_ratio": ratio_fc_act,
+        "bias_share_of_mse": bias_share_mse,
         "p50_abs_error_mw": round(p50_abs, 2),
         "p90_abs_error_mw": round(p90_abs, 2),
         "p95_abs_error_mw": round(p95_abs, 2),
