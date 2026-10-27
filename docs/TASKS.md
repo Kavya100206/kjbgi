@@ -1,10 +1,10 @@
 # TASKS — work top to bottom. Tick only when "Done when" is true and evidence is shown.
 
 ## Phase 0 — Scaffold and CI (≈1h)
-- [ ] T0.1 Create repo skeleton per PLAN §3; add AGENTS.md and docs/. Done when: tree matches, first commit made.
-- [ ] T0.2 Backend scaffold: FastAPI app, `/api/health`, pyproject, ruff, pytest with one passing test. Done when: `pytest -q` green, `curl /api/health` returns ok.
-- [ ] T0.3 Frontend scaffold: Vite + React + TS strict, eslint, Vitest with one passing test, TanStack Query, router. Done when: `npm run build && npm test` green.
-- [ ] T0.4 Docker: backend Dockerfile, frontend Dockerfile + nginx proxy, docker-compose. Done when: `docker compose up --build` serves UI at :8080 and health via the proxy.
+- [x] T0.1 Create repo skeleton per PLAN §3; add AGENTS.md and docs/. Done when: tree matches, first commit made.
+- [x] T0.2 Backend scaffold: FastAPI app, `/api/health`, pyproject, ruff, pytest with one passing test. Done when: `pytest -q` green, `curl /api/health` returns ok.
+- [x] T0.3 Frontend scaffold: Vite + React + TS strict, eslint, Vitest with one passing test, TanStack Query, router. Done when: `npm run build && npm test` green.
+- [x] T0.4 Docker: backend Dockerfile, frontend Dockerfile + nginx proxy, docker-compose. Done when: `docker compose up --build` serves UI at :8080 and health via the proxy.
 - [ ] T0.5 CI workflow (lint, test, build, docker build). Done when: green run on GitHub.
 - [ ] T0.6 Vercel spike (time-box 30 min): deploy a hello-world FastAPI function + static page, import pandas, check bundle size (both compressed AND unzipped). Look up current Vercel Python function limits from docs before measuring. Done when: DECISIONS.md records "Vercel OK" or "fallback to Heroku container" with documented limits and measured sizes. If spike fails or exceeds limits, switch to Heroku immediately.
 
