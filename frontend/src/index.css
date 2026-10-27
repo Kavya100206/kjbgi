@@ -1,0 +1,68 @@
+/* Vane design system — tokens, reset, base styles */
+
+/* ── Google Fonts ─────────────────────────────────────────────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Public+Sans:wght@400;500;600;700&display=swap");
+
+/* ── Colour tokens ────────────────────────────────────────────────────────── */
+:root {
+  --color-ground: #edf1f4;
+  --color-ink: #12253a;
+  --color-wind: #0f7c86;
+  --color-actual: #d98e04;
+  --color-risk: #b83a3a;
+  --color-band: rgba(15, 124, 134, 0.15);
+  --color-surface: #ffffff;
+  --color-border: #cdd5dc;
+  --color-muted: #657a8e;
+
+  /* ── Typography ─────────────────────────────────────────────────────────── */
+  --font-ui: "Public Sans", system-ui, sans-serif;
+  --font-editorial: "Newsreader", Georgia, serif;
+  --font-size-base: 1rem;
+  --font-feature-numbers: "tnum", "lnum"; /* tabular figures */
+
+  /* ── Spacing ─────────────────────────────────────────────────────────────── */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  /* ── Radii ───────────────────────────────────────────────────────────────── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+}
+
+/* ── Reset ────────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: var(--font-size-base);
+  background: var(--color-ground);
+  color: var(--color-ink);
+  line-height: 1.5;
+  min-height: 100dvh;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+/* ── Focus visible ───────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-wind);
+  outline-offset: 2px;
+}
