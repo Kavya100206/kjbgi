@@ -6,7 +6,7 @@
 - [x] T0.3 Frontend scaffold: Vite + React + TS strict, eslint, Vitest with one passing test, TanStack Query, router. Done when: `npm run build && npm test` green.
 - [x] T0.4 Docker: backend Dockerfile, frontend Dockerfile + nginx proxy, docker-compose. Done when: `docker compose up --build` serves UI at :8080 and health via the proxy.
 - [ ] T0.5 CI workflow (lint, test, build, docker build). Done when: green run on GitHub.
-- [ ] T0.6 Vercel spike (time-box 30 min): deploy a hello-world FastAPI function + static page, import pandas, check bundle size (both compressed AND unzipped). Look up current Vercel Python function limits from docs before measuring. Done when: DECISIONS.md records "Vercel OK" or "fallback to Heroku container" with documented limits and measured sizes. If spike fails or exceeds limits, switch to Heroku immediately.
+- [x] T0.6 Vercel spike (time-box 30 min): deploy a hello-world FastAPI function + static page, import pandas, check bundle size (both compressed AND unzipped). Look up current Vercel Python function limits from docs before measuring. Done when: DECISIONS.md records "Vercel OK" or "fallback to Heroku container" with documented limits and measured sizes. If spike fails or exceeds limits, switch to Heroku immediately.
 
 ## Phase 1 — Data ingest (≈2.5h)
 - [x] T1.1 Explore both Elexon endpoints with small windows; save raw JSON under `backend/tests/fixtures/`. Done when: DOMAIN.md "To verify" list is answered with what was observed. ✓ Completed 2026-10-26: fixtures saved, DOMAIN.md updated with confirmed fields.
