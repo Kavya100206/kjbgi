@@ -8,7 +8,10 @@ function renderApp(initialPath = "/decision") {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={qc}>
-      <MemoryRouter initialEntries={[initialPath]}>
+      <MemoryRouter
+        initialEntries={[initialPath]}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
         <App />
       </MemoryRouter>
     </QueryClientProvider>,
