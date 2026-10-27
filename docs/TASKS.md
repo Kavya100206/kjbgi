@@ -17,7 +17,7 @@
 
 ## Phase 2 — Domain logic (≈2.5h)
 - [x] T2.0 `domain/pairing.py`: hourly actual = mean of FUELHH H:00 and H:30; exclude hour if either missing; return paired DataFrame with coverage flag. Done when: tests cover (a) both halves present → correct mean, (b) one half missing → excluded, (c) both missing → excluded, (d) boundary hours 00:00 and 23:00, (e) 24 rows per delivery day when data is complete.
-- [ ] T2.1 `vintage.py`: forecast-at-cutoff selection and horizon calc. Done when: tests cover exact-equal cutoff, none-before-cutoff, multiple vintages, day boundary, cutoff hour change.
+- [x] T2.1 `vintage.py`: forecast-at-cutoff selection and horizon calc. Done when: tests cover exact-equal cutoff, none-before-cutoff, multiple vintages, day boundary, cutoff hour change.
 - [ ] T2.2 `metrics.py`: MAE, RMSE, bias, nMAE, quantiles, coverage. Done when: hand-computed fixture test passes, empty/NaN cases defined.
 - [ ] T2.3 By-horizon, by-hour, daily, distribution aggregations. Done when: tests green; totals reconcile with summary.
 - [ ] T2.4 `risk.py`: prior-days-only empirical bands with fallback flag. Done when: test proves no use of same-day or later errors.
