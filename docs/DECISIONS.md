@@ -32,3 +32,10 @@ Why: Vercel documented limits are 250 MB uncompressed (500 MB on modern Python r
 Alternatives: Heroku container (verified working via Dockerfile and compose, zero bundle limit, but slower free/cheap cold starts).
 Consequence: Proceed with Vercel monorepo deployment via vercel.json and api/index.py; Heroku container kept ready as fallback.
 
+## D-008 Reporting of forecast bias (do not bias-correct raw data)
+Date: 2026-10-27
+Decision: Do NOT apply artificial bias correction or calibrate raw forecasts. Report the raw empirical bias (+1,852 MW / +16%) transparently alongside random error ($MSE = \text{Bias}^2 + \text{Variance}$ breakdown). The risk band continues using empirical error quantiles (which naturally shift for bias) and explicitly reports `bias_used_mw` so buyers see "cushion = X MW of which Y MW is systematic bias".
+Why: Phase 2.5 diagnostics proved the bias is real, stable across 27/31 days, and present at all hours/horizons, while the forecast retains strong meteorological skill ($r=0.926$, beating persistence by 50%). A plausible industry cause is fleet scope mismatch (National Grid ESO WINDFOR total wind vs BMRS FUELHH transmission-metered wind) or curtailment, but BMRS data alone cannot confirm this. Altering raw numbers would obscure operational reality.
+Alternatives: Multiplicative scaling (0.8x) or offset subtraction. Rejected: hides true market outturn and introduces untraceable assumptions.
+Consequence: New fields in `/api/accuracy/summary` and `/api/risk/band`; UI displays the bias-variance decomposition and explanatory note on Method page.
+
