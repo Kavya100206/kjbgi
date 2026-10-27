@@ -126,3 +126,216 @@ def compute_quantiles(
         key = f"P{int(round(q * 100))}"
         res[key] = round(float(np.percentile(clean, q * 100)), 2)
     return res
+
+
+# ── Aggregations ──────────────────────────────────────────────────────────────
+
+
+def aggregate_by_hour(paired_df: pd.DataFrame) -> list[dict[str, Any]]:
+    """Group paired decision-time forecasts by hour of day (0..23).
+
+    Note: The UI must disclose that lead time is confounded with hour-of-day
+    (~16.5 h for 00:00 to ~39.5 h for 23:00 from a 09:00 morning cutoff).
+    """
+    if paired_df.empty:
+        return []
+
+    df = paired_df.copy()
+    if not pd.api.types.is_datetime64_any_dtype(df["startTime"]):
+        df["startTime"] = pd.to_datetime(df["startTime"], utc=True)
+
+    df["hour"] = df["startTime"].dt.hour
+    num_days = df["startTime"].dt.date.nunique()
+
+    rows: list[dict[str, Any]] = []
+    for hour in range(24):
+        hour_df = df[df["hour"] == hour]
+        metrics = compute_metrics_dict(
+            hour_df["error_mw"],
+            hour_df["actual_mw"],
+            hour_df.get("forecast_mw"),
+            denominator=num_days,
+        )
+        rows.append(
+            {
+                "hour": hour,
+                "n": metrics["n"],
+                "denominator": metrics["denominator"],
+                "mae_mw": metrics["mae_mw"],
+                "rmse_mw": metrics["rmse_mw"],
+                "bias_mw": metrics["bias_mw"],
+                "nmae_pct": metrics["nmae_pct"],
+                "mean_actual_mw": metrics["mean_actual_mw"],
+                "mean_forecast_mw": metrics["mean_forecast_mw"],
+            }
+        )
+    return rows
+
+
+def aggregate_daily(paired_df: pd.DataFrame) -> list[dict[str, Any]]:
+    """Group paired decision-time forecasts by delivery day."""
+    if paired_df.empty:
+        return []
+
+    df = paired_df.copy()
+    if not pd.api.types.is_datetime64_any_dtype(df["startTime"]):
+        df["startTime"] = pd.to_datetime(df["startTime"], utc=True)
+
+    df["date"] = df["startTime"].dt.date
+    unique_dates = sorted(df["date"].unique())
+
+    rows: list[dict[str, Any]] = []
+    for d in unique_dates:
+        day_df = df[df["date"] == d]
+        metrics = compute_metrics_dict(
+            day_df["error_mw"],
+            day_df["actual_mw"],
+            day_df.get("forecast_mw"),
+            denominator=24,  # 24 hours per day
+        )
+        rows.append(
+            {
+                "date": d.isoformat(),
+                "n": metrics["n"],
+                "denominator": 24,
+                "coverage_pct": metrics["coverage_pct"],
+                "mae_mw": metrics["mae_mw"],
+                "rmse_mw": metrics["rmse_mw"],
+                "bias_mw": metrics["bias_mw"],
+                "nmae_pct": metrics["nmae_pct"],
+                "mean_actual_mw": metrics["mean_actual_mw"],
+                "mean_forecast_mw": metrics["mean_forecast_mw"],
+            }
+        )
+    return rows
+
+
+HORIZON_BUCKETS: list[tuple[str, float, float]] = [
+    ("<12", 0.0, 12.0),
+    ("12–24", 12.0, 24.0),
+    ("24–36", 24.0, 36.0),
+    ("36–48", 36.0, 48.0),
+    ("48–60", 48.0, 60.0),
+    ("60–67", 60.0, 67.5),
+]
+
+
+def aggregate_by_horizon(
+    all_forecasts_df: pd.DataFrame,
+    actuals_df: pd.DataFrame,
+) -> dict[str, Any]:
+    """Evaluate accuracy across ALL vintages bucketed by forecast horizon.
+
+    Filters out retrospective backcasts (horizon < 0) and reports their count.
+    Buckets forward forecasts: <12, 12-24, 24-36, 36-48, 48-60, 60-67 hours.
+    """
+    from app.domain.pairing import pair_forecast_and_actual
+
+    if all_forecasts_df.empty or actuals_df.empty:
+        return {
+            "buckets": [],
+            "excluded_backcasts_count": 0,
+            "total_evaluated_count": 0,
+        }
+
+    # Pair all forecast vintages with hourly actuals
+    paired = pair_forecast_and_actual(all_forecasts_df, actuals_df)
+    valid_paired = paired[paired["is_paired"]].copy()
+
+    if "horizon_h" not in valid_paired.columns:
+        valid_paired["horizon_h"] = (
+            valid_paired["startTime"] - pd.to_datetime(valid_paired["publishTime"], utc=True)
+        ).dt.total_seconds() / 3600.0
+
+    # Filter out retrospective backcasts (horizon < 0)
+    backcasts_mask = valid_paired["horizon_h"] < 0
+    excluded_backcasts_count = int(backcasts_mask.sum())
+    forward_df = valid_paired[~backcasts_mask].copy()
+
+    bucket_results: list[dict[str, Any]] = []
+    for label, low, high in HORIZON_BUCKETS:
+        # Semi-open interval [low, high), except last bucket includes high
+        if high >= 67.0:
+            mask = (forward_df["horizon_h"] >= low) & (forward_df["horizon_h"] <= high)
+        else:
+            mask = (forward_df["horizon_h"] >= low) & (forward_df["horizon_h"] < high)
+
+        b_df = forward_df[mask]
+        m = compute_metrics_dict(b_df["error_mw"], b_df["actual_mw"], b_df.get("forecast_mw"))
+        bucket_results.append(
+            {
+                "bucket": label,
+                "n": m["n"],
+                "mae_mw": m["mae_mw"],
+                "rmse_mw": m["rmse_mw"],
+                "bias_mw": m["bias_mw"],
+                "nmae_pct": m["nmae_pct"],
+                "mean_actual_mw": m["mean_actual_mw"],
+                "mean_forecast_mw": m["mean_forecast_mw"],
+            }
+        )
+
+    return {
+        "buckets": bucket_results,
+        "excluded_backcasts_count": excluded_backcasts_count,
+        "total_evaluated_count": len(forward_df),
+    }
+
+
+def aggregate_distribution(
+    paired_df: pd.DataFrame,
+    num_bins: int = 20,
+) -> dict[str, Any]:
+    """Compute error distribution histogram, quantiles, and plain-English reading."""
+    if paired_df.empty:
+        return {
+            "bins": [],
+            "quantiles": {},
+            "total_count": 0,
+            "plain_english_p90": None,
+        }
+
+    valid_errors = paired_df.loc[paired_df["is_paired"], "error_mw"].dropna().values
+    if len(valid_errors) == 0:
+        return {
+            "bins": [],
+            "quantiles": {},
+            "total_count": 0,
+            "plain_english_p90": None,
+        }
+
+    counts, bin_edges = np.histogram(valid_errors, bins=num_bins)
+    total_count = len(valid_errors)
+
+    bins: list[dict[str, Any]] = []
+    for i in range(len(counts)):
+        b_start = round(float(bin_edges[i]), 1)
+        b_end = round(float(bin_edges[i + 1]), 1)
+        b_mid = round((b_start + b_end) / 2.0, 1)
+        c = int(counts[i])
+        pct = round((c / total_count) * 100.0, 2)
+        bins.append(
+            {
+                "bin_start": b_start,
+                "bin_end": b_end,
+                "bin_mid": b_mid,
+                "count": c,
+                "pct_of_total": pct,
+            }
+        )
+
+    quantiles = compute_quantiles(valid_errors, quantiles=(0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95))
+
+    p90_err = quantiles.get("P90", 0.0)
+    plain_english = (
+        f"On 1 in 10 hours (P90), the forecast was too high by ≥ {abs(p90_err):.0f} MW"
+        if p90_err >= 0
+        else f"On 9 in 10 hours, the forecast was within {abs(p90_err):.0f} MW"
+    )
+
+    return {
+        "bins": bins,
+        "quantiles": quantiles,
+        "total_count": total_count,
+        "plain_english_p90": plain_english,
+    }
