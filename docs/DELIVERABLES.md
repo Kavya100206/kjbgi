@@ -12,10 +12,10 @@
 ## Video (unlisted YouTube, ≤ 10 min total; evaluators watch this first)
 ### Part 1 — Customer pitch (≈4:30). Audience: head of day-ahead desk. Goal: impress.
 - 0:00 Problem in their words: you must commit tomorrow's volumes before you know tomorrow's wind. (20 s)
-- 0:20 What we built: one screen shows what the forecast said *when you had to decide*, another says how wrong it tends to be. (20 s)
-- 0:40 Live demo, Decision view for a windy day in January: forecast at 09:00 cutoff, forecast age, actual outcome overlay, the cushion band. Say the MW and what it means in £-risk terms qualitatively, no invented prices. (90 s)
-- 2:10 Accuracy view: headline MAE / bias / P90 over-forecast; accuracy by lead time (why using the right vintage matters); by hour of day. Give one concrete insight you found in the data. (120 s)
-- 4:10 How they'd use it Monday morning, and what a next phase could add (their own demand, more fuel types, live refresh). Close with the ask. (20 s)
+- 0:20 What we built: one screen shows what the forecast said *when you had to decide*, another says how wrong it tends to be. Headline story: forecast tracks the swings ($r \approx 0.93$, ~50% lower MAE than honest 48h persistence) but ran ~16% above BMRS-metered wind in Jan 2026 on 27 of 31 days; here is the cushion in MW. Say plainly that the cause is unverified (possible fleet-scope mismatch between total GB wind and transmission-metered BMUs), and that we do not artificially adjust the data. (30 s)
+- 0:50 Live demo, Decision view for a windy day in January: forecast at 09:00 cutoff, forecast age, actual outcome overlay (labelled hindsight), the cushion band ("cushion = X MW of which Y MW is systematic bias"). Say the MW and what it means in £-risk terms qualitatively, no invented prices. (90 s)
+- 2:20 Accuracy view: KPI row; bias vs random error panel ($\text{Bias}^2/\text{MSE}$); accuracy by lead time (why using the right vintage matters); by hour of day with lead-time confounding note; error histogram with plain-English reading. (100 s)
+- 4:00 How they'd use it Monday morning, and what a next phase could add (their own demand, more fuel types, live refresh). Close with the ask. (30 s)
 ### Part 2 — Tech review (≈4:30). Audience: tech lead. Goal: easy review, knowledge transfer.
 - 0:00 Architecture diagram: offline ingest → snapshot → pure domain modules → thin API → React views. Why snapshot. (60 s)
 - 1:00 The core idea in code: vintage selection and why look-ahead bias would flatter the forecast; show the test. (90 s)

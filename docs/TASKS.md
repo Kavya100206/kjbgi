@@ -45,7 +45,7 @@
 ## Phase 6 — Docs and video (≈1.5h)
 - [ ] T6.1 README per `docs/DELIVERABLES.md` incl. AI-tools disclosure and deployed link.
 - [ ] T6.2 Rehearse and record video (two parts, ≤ 10 min), upload unlisted, verify in incognito.
-- [ ] T6.3 Anonymise repo name, make public, check no personal info/secrets in history.
+- [ ] T6.3 Repo anonymity plan: keep private working repo as is. At the end, create a NEW public repo with a random name (e.g. 6 chars), and publish a copy of the final tree with a neutral git identity (no real name/email in any commit, README, or package metadata). Check no personal info/secrets in history.
 - [ ] T6.4 Fill and submit the form; re-verify every link in incognito.
 
 ## Stretch (only if all P0/P1 done)

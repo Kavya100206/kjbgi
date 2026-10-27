@@ -119,19 +119,19 @@ $$\text{error} = 0.0821 \times \text{actual} + 900.58\text{ MW}$$
 
 ## 5. Comparison With Trivial Baseline (Persistence)
 
-Evaluated on the common sample of $n = 696$ hours (2026-01-03 to 2026-01-31) where D-1 and D-2 persistence values are fully available:
+Evaluated on the common sample of $n = 696$ hours (2026-01-03 to 2026-01-31) where D-1 and D-2 persistence values are available:
 
-| Model | MAE (MW) | RMSE (MW) | Bias (MW) | Pearson Corr ($r$) |
-|---|---|---|---|---|
-| **Elexon WINDFOR (at 09:00 cutoff)** | **2,037.53** | **2,514.03** | **+1,727.30** | **0.9255** |
-| Persistence 24h (D-1 at same hour) | 4,075.26 | 5,258.96 | +163.65 | 0.2130 |
-| Persistence 48h (D-2 at same hour) | 4,183.67 | 5,190.40 | +147.61 | 0.2301 |
+| Model | MAE (MW) | RMSE (MW) | Bias (MW) | Pearson Corr ($r$) | Note |
+|---|---|---|---|---|---|
+| **Elexon WINDFOR (at 09:00 cutoff)** | **2,037.53** | **2,514.03** | **+1,727.30** | **0.9255** | Day-ahead decision forecast |
+| **Persistence 48h (D-2 at same hour)** | **4,183.67** | **5,190.40** | **+147.61** | **0.2301** | **Honest baseline** (strictly known at D-1 09:00 cutoff) |
+| Persistence 24h (D-1 at same hour) | 4,075.26 | 5,258.96 | +163.65 | 0.2130 | *Oracle persistence* (uses D-1 actuals not yet known at cutoff) |
 
-- **MAE Skill Score vs 24h Persistence:** **+50.0%** reduction in MAE.
-- **MAE Skill Score vs 48h Persistence:** **+51.3%** reduction in MAE.
-- **Correlation:** WINDFOR achieves **$r = 0.9255$** tracking actual weather variations, whereas persistence achieves only $r \approx 0.22$.
+- **MAE Skill Score vs Honest 48h Persistence:** **+51.3%** reduction in MAE (2,038 MW vs 4,184 MW).
+- **MAE Skill Score vs Oracle 24h Persistence:** **+50.0%** reduction in MAE (2,038 MW vs 4,075 MW).
+- **Correlation:** WINDFOR achieves **$r = 0.9255$** tracking actual weather variations, whereas persistence achieves only $r \approx 0.23$.
 
-**Conclusion:** Although WINDFOR has a large systematic offset, it possesses massive meteorological skill. The forecast captures weather front transitions and ramps with high fidelity ($r > 0.92$), beating persistence errors by half.
+**Conclusion:** Although WINDFOR has a large systematic offset, it possesses massive meteorological skill. Compared to the honest causal baseline available to a buyer at decision time (48h persistence), WINDFOR cuts MAE by more than half and captures weather front transitions with high fidelity ($r > 0.92$). Even against an unachievable oracle 24h persistence, WINDFOR's skill advantage remains >50%.
 
 ---
 
