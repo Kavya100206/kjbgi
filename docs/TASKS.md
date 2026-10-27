@@ -16,7 +16,7 @@
 - [x] T1.5 Loader module with schema validation and tests using fixtures. Done when: tests green, loader fails loudly on bad schema.
 
 ## Phase 2 — Domain logic (≈2.5h)
-- [ ] T2.0 `domain/pairing.py`: hourly actual = mean of FUELHH H:00 and H:30; exclude hour if either missing; return paired DataFrame with coverage flag. Done when: tests cover (a) both halves present → correct mean, (b) one half missing → excluded, (c) both missing → excluded, (d) boundary hours 00:00 and 23:00, (e) 24 rows per delivery day when data is complete.
+- [x] T2.0 `domain/pairing.py`: hourly actual = mean of FUELHH H:00 and H:30; exclude hour if either missing; return paired DataFrame with coverage flag. Done when: tests cover (a) both halves present → correct mean, (b) one half missing → excluded, (c) both missing → excluded, (d) boundary hours 00:00 and 23:00, (e) 24 rows per delivery day when data is complete.
 - [ ] T2.1 `vintage.py`: forecast-at-cutoff selection and horizon calc. Done when: tests cover exact-equal cutoff, none-before-cutoff, multiple vintages, day boundary, cutoff hour change.
 - [ ] T2.2 `metrics.py`: MAE, RMSE, bias, nMAE, quantiles, coverage. Done when: hand-computed fixture test passes, empty/NaN cases defined.
 - [ ] T2.3 By-horizon, by-hour, daily, distribution aggregations. Done when: tests green; totals reconcile with summary.
