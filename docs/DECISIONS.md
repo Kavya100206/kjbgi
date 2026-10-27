@@ -13,7 +13,13 @@ Why: positive = over-forecast = buyer risk. Consequence: all labels explain it i
 ## (add more below: hosting choice after T0.6, pandas vs numpy, chart library, any spec deviations)
 
 ## D-004 Hourly pairing rule (Option C chosen over A and B)
-Why: WINDFOR is hourly, FUELHH is 30-min. Option A (H:00 only) ignores half the actual data. Option B (WINDFOR repeated for :30) invents data. Option C (mean of H:00 and H:30) uses all FUELHH data without fabricating forecast points. Limitation: unknown whether WINDFOR value is an hour-average or instantaneous. Sensitivity (Option A vs C diff) computed in T2.5 and pasted here when available. Consequence: denominator = 744 (24 h × 31 days); hours with either half missing are excluded.
+Why: WINDFOR is hourly, FUELHH is 30-min. Option A (H:00 only) ignores half the actual data. Option B (WINDFOR repeated for :30) invents data. Option C (mean of H:00 and H:30) uses all FUELHH data without fabricating forecast points.
+Sensitivity result (computed in T2.5 on full January 2026 snapshot at 09:00 cutoff, n=744/744):
+- Option C (mean of H:00 & H:30): MAE = 2142.12 MW, RMSE = 2611.70 MW, Bias = +1851.90 MW, nMAE = 18.50%.
+- Option A (H:00 only): MAE = 2127.48 MW, RMSE = 2606.07 MW, Bias = +1851.53 MW, nMAE = 18.37%.
+- Difference (A - C): MAE diff = -14.64 MW (-0.68% relative), Bias diff = -0.38 MW (-0.02% relative), RMSE diff = -5.63 MW.
+Conclusion: The pairing rule choice causes under 0.7% difference in MAE and virtually zero (<0.02%) difference in bias. Option C is robust, fully utilizes both settlement periods, and is disclosed on the Method page. Denominator = 744 (24 h × 31 days).
+
 
 ## D-005 Vintage selection uses real publishTime from WINDFOR
 Why: WINDFOR publish clock times are mostly regular (02:30, 04:30, 07:30, 09:30, 11:30, 15:30, 18:30, 22:30 UTC) but one exception observed (12:25 instead of 11:30). Do not hardcode clock times. Use actual `publishTime` values from the snapshot. Consequence: vintage selection is always exact, never approximated from a schedule.

@@ -21,7 +21,7 @@
 - [x] T2.2 `metrics.py`: MAE, RMSE, bias, nMAE, quantiles, coverage. Done when: hand-computed fixture test passes, empty/NaN cases defined.
 - [x] T2.3 By-horizon, by-hour, daily, distribution aggregations. Done when: tests green; totals reconcile with summary.
 - [x] T2.4 `risk.py`: prior-days-only empirical bands with fallback flag. Done when: test proves no use of same-day or later errors.
-- [ ] T2.5 Independent cross-check: a separate script (plain pandas, different code path) recomputes the headline metrics for Jan at 09:00 cutoff using Option C pairing AND Option A (H:00 only) pairing. Done when: Option C matches app metrics to 1e-6; sensitivity diff (MAE and bias difference between A and C) pasted into DECISIONS.md.
+- [x] T2.5 Independent cross-check: a separate script (plain pandas, different code path) recomputes the headline metrics for Jan at 09:00 cutoff using Option C pairing AND Option A (H:00 only) pairing. Done when: Option C matches app metrics to 1e-6; sensitivity diff (MAE and bias difference between A and C) pasted into DECISIONS.md.
 
 ## Phase 3 — API (≈1.5h)
 - [ ] T3.1 Routers + Pydantic models for all endpoints in PLAN §4 with validation. Done when: OpenAPI complete, 422s clear.
