@@ -1,21 +1,25 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
+
+import { ControlStrip } from "./components/ControlStrip";
+import { Header } from "./components/Header";
+import { AccuracyView } from "./views/AccuracyView";
+import { DecisionView } from "./views/DecisionView";
+import { MethodView } from "./views/MethodView";
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/decision" replace />} />
-      <Route
-        path="/decision"
-        element={<div data-testid="decision-placeholder">Decision view — coming in T4.2</div>}
-      />
-      <Route
-        path="/accuracy"
-        element={<div data-testid="accuracy-placeholder">Accuracy view — coming in T4.4</div>}
-      />
-      <Route
-        path="/method"
-        element={<div data-testid="method-placeholder">Method view — coming in T4.5</div>}
-      />
-    </Routes>
+    <>
+      <Header />
+      <ControlStrip />
+      <main className="main-content" role="main">
+        <Routes>
+          <Route path="/" element={<DecisionView />} />
+          <Route path="/decision" element={<DecisionView />} />
+          <Route path="/accuracy" element={<AccuracyView />} />
+          <Route path="/method" element={<MethodView />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+    </>
   );
 }

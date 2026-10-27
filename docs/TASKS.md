@@ -29,13 +29,13 @@
 - [x] T3.3 CORS, error handler, caching headers for static data. Done when: manual curl checks pasted.
 
 ## Phase 4 — Frontend (≈4h)
-- [ ] T4.1 Design tokens, fonts, layout shell, ControlStrip with URL-synced state. Done when: reload keeps state, 375px and 1280px screenshots OK.
-- [ ] T4.2 Decision view: ForecastChart (forecast, actual, band), day summary, forecast-age hover, selected vintage publishTime visible. Done when: matches API numbers for 2026-01-15.
-- [ ] T4.3 Revisions panel (vintage evolution for selected target/day). Done when: shows publish times and values correctly.
-- [ ] T4.4 Accuracy view: KPI row, by-horizon chart, by-hour chart, daily chart, error histogram with plain-English reading. Done when: numbers equal API/summary.
-- [ ] T4.5 Method view: assumptions A1–A7, formulas, data provenance, limitations (incl. A7 pairing and sensitivity). Done when: every A1–A7 appears.
-- [ ] T4.6 Loading, empty, error states; keyboard focus; contrast check. Done when: checklist in VERIFICATION §5 passes.
-- [ ] T4.7 Frontend tests: formatters, ControlStrip, one view with mocked API. Done when: green in CI.
+- [x] T4.1 Design tokens, fonts, layout shell, ControlStrip with URL-synced state. Done when: reload keeps state, 375px and 1280px screenshots OK.
+- [x] T4.2 Decision view: ForecastChart (forecast, actual, band), day summary, forecast-age hover, selected vintage publishTime visible. Done when: matches API numbers for 2026-01-15.
+- [x] T4.3 Revisions panel (vintage evolution for selected target/day). Done when: shows publish times and values correctly.
+- [x] T4.4 Accuracy view: KPI row, by-horizon chart, by-hour chart, daily chart, error histogram with plain-English reading. Done when: numbers equal API/summary.
+- [x] T4.5 Method view: assumptions A1–A7, formulas, data provenance, limitations (incl. A7 pairing and sensitivity). Done when: every A1–A7 appears.
+- [x] T4.6 Loading, empty, error states; keyboard focus; contrast check. Done when: checklist in VERIFICATION §5 passes.
+- [x] T4.7 Frontend tests: formatters, ControlStrip, one view with mocked API. Done when: green in CI.
 
 ## Phase 5 — Deploy (≈1h)
 - [ ] T5.1 Deploy to chosen host per T0.6 decision. Done when: public URL serves UI and /api/meta.

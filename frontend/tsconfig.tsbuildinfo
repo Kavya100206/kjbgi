@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/test/app.test.tsx","./src/test/setup.ts"],"version":"5.6.3"}
+{"root":["./src/app.tsx","./src/main.tsx","./src/api/client.ts","./src/api/types.ts","./src/components/controlstrip.tsx","./src/components/header.tsx","./src/lib/formatters.ts","./src/lib/usecontrolparams.ts","./src/test/app.test.tsx","./src/test/controlstrip.test.tsx","./src/test/decisionview.test.tsx","./src/test/formatters.test.ts","./src/test/setup.ts","./src/views/accuracyview.tsx","./src/views/decisionview.tsx","./src/views/methodview.tsx"],"version":"5.6.3"}

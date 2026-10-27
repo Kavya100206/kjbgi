@@ -10,8 +10,8 @@ Policy: update this log at the completion of each phase boundary.
 | **Phase 2** | Domain logic (pairing, vintage, metrics, risk, cross-check) | 2.5 | 2.0 (measured) | ✅ Done | T2.0–T2.5 completed; Option C verified against independent check to 1e-6; sensitivity documented. |
 | **Phase 2.5** | Bias diagnostics & hosting verification | 0.75 | 0.5 (measured) | ✅ Done | Hand-traceable row, lag alignment, scale regression, stability, baseline. |
 | **Phase 3** | FastAPI routers, models, tests | 1.5 | 0.75 (measured) | ✅ Done | All PLAN §4 endpoints, schemas, AC-3 & cross-check tests green. |
-| **Phase 4** | Frontend (React, charts, 3 views, accessibility) | 4.0 | 0.0 | ⏳ Pending | |
+| **Phase 4** | Frontend (React, charts, 3 views, accessibility) | 4.0 | 1.5 (measured) | ✅ Done | Responsive UI (1280px & 375px), URL sync, Decision, Accuracy, Method views, vitest suite green. |
 | **Phase 5** | Production deploy & incognito checks | 1.0 | 0.0 | ⏳ Pending | |
 | **Phase 6** | README, documentation, video (2 parts ≤10 min) | 1.5 | 0.0 | ⏳ Pending | |
 | **Buffer** | Contingency & final verification | 1.75 | — | 🛡️ Available | |
-| **TOTAL** | | **16.0** | **5.75** | | **10.25 hours remaining** |
+| **TOTAL** | | **16.0** | **7.25** | | **8.75 hours remaining** |

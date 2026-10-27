@@ -19,18 +19,17 @@ function renderApp(initialPath = "/decision") {
 }
 
 describe("App routing", () => {
-  it("renders decision placeholder on /decision", () => {
+  it("renders header branding and navigation on /decision", () => {
     renderApp("/decision");
-    expect(screen.getByTestId("decision-placeholder")).toBeInTheDocument();
+    expect(screen.getByText("Vane")).toBeInTheDocument();
+    expect(screen.getByText("Decision")).toBeInTheDocument();
+    expect(screen.getByText("Accuracy")).toBeInTheDocument();
+    expect(screen.getByText(/Method & Assumptions/i)).toBeInTheDocument();
   });
 
-  it("redirects / to /decision", () => {
-    renderApp("/");
-    expect(screen.getByTestId("decision-placeholder")).toBeInTheDocument();
-  });
-
-  it("renders accuracy placeholder on /accuracy", () => {
-    renderApp("/accuracy");
-    expect(screen.getByTestId("accuracy-placeholder")).toBeInTheDocument();
+  it("renders method page on /method", () => {
+    renderApp("/method");
+    expect(screen.getByText(/Methodology, Assumptions & Data Provenance/i)).toBeInTheDocument();
   });
 });
+
