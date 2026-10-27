@@ -13,7 +13,7 @@
 - [x] T1.2 `scripts/ingest.py`: chunked fetch (7-day chunks, 0.5 s delay) with retry/backoff, pydantic validation, dedupe (A6), UTC parsing, window from config (A1). FUELHH uses `settlementDateFrom/To`; WINDFOR uses `publishDateTimeFrom/To` only. Done when: runs end to end with `--refresh`, idempotent.
 - [x] T1.3 Write snapshot (`actuals.csv.gz`, `forecasts.csv.gz`, `meta.json` with ingest time, counts, min/max times). Done when: committed, total size reported (expected ~140 KB gzipped).
 - [x] T1.4 Data quality report: vintages per day (expected 8), horizon min/median/max for WINDFOR, count of hours missing a half-hour actual (FUELHH gaps), Jan 1 coverage at 09:00 cutoff (expected: 24 of 24 hours covered), full coverage table 24×31=744 hours. Done when: report saved to `docs/DATA_REPORT.md` and anomalies listed.
-- [ ] T1.5 Loader module with schema validation and tests using fixtures. Done when: tests green, loader fails loudly on bad schema.
+- [x] T1.5 Loader module with schema validation and tests using fixtures. Done when: tests green, loader fails loudly on bad schema.
 
 ## Phase 2 — Domain logic (≈2.5h)
 - [ ] T2.0 `domain/pairing.py`: hourly actual = mean of FUELHH H:00 and H:30; exclude hour if either missing; return paired DataFrame with coverage flag. Done when: tests cover (a) both halves present → correct mean, (b) one half missing → excluded, (c) both missing → excluded, (d) boundary hours 00:00 and 23:00, (e) 24 rows per delivery day when data is complete.
