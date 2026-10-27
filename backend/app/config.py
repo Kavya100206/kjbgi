@@ -27,8 +27,24 @@ INGEST_CHUNK_DAYS: int = 7  # WINDFOR fetch window per request
 INGEST_DELAY_S: float = 0.5  # polite delay between requests
 
 # ── Snapshot paths ────────────────────────────────────────────────────────────
-REPO_ROOT = pathlib.Path(__file__).parent.parent.parent
-SNAPSHOT_DIR = REPO_ROOT / "backend" / "data" / "snapshot"
-ACTUALS_PATH = SNAPSHOT_DIR / "actuals.csv.gz"
-FORECASTS_PATH = SNAPSHOT_DIR / "forecasts.csv.gz"
-META_PATH = SNAPSHOT_DIR / "meta.json"
+REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
+
+
+def get_snapshot_dir() -> pathlib.Path:
+    import os
+
+    if env_val := os.getenv("SNAPSHOT_DIR"):
+        return pathlib.Path(env_val)
+    candidate1 = pathlib.Path(__file__).resolve().parent.parent / "data" / "snapshot"
+    if candidate1.exists():
+        return candidate1
+    candidate2 = REPO_ROOT / "backend" / "data" / "snapshot"
+    if candidate2.exists():
+        return candidate2
+    return candidate1
+
+
+SNAPSHOT_DIR: pathlib.Path = get_snapshot_dir()
+ACTUALS_PATH: pathlib.Path = SNAPSHOT_DIR / "actuals.csv.gz"
+FORECASTS_PATH: pathlib.Path = SNAPSHOT_DIR / "forecasts.csv.gz"
+META_PATH: pathlib.Path = SNAPSHOT_DIR / "meta.json"

@@ -1,0 +1,43 @@
+{
+  "ingested_at": "2026-10-27T08:56:31Z",
+  "window": {
+    "start": "2026-01-01",
+    "end": "2026-01-31",
+    "default_cutoff_hour": 9
+  },
+  "actuals": {
+    "rows": 1536,
+    "file": "actuals.csv.gz",
+    "size_bytes": 14811,
+    "min_start_time": "2026-01-01T00:00:00Z",
+    "max_start_time": "2026-02-01T23:30:00Z",
+    "min_publish_time": "2026-01-01T00:30:00Z",
+    "max_publish_time": "2026-02-02T00:00:00Z",
+    "columns": [
+      "dataset",
+      "publishTime",
+      "startTime",
+      "settlementDate",
+      "settlementPeriod",
+      "fuelType",
+      "generation"
+    ]
+  },
+  "forecasts": {
+    "rows": 19856,
+    "file": "forecasts.csv.gz",
+    "size_bytes": 101681,
+    "unique_vintages": 272,
+    "min_publish_time": "2025-12-29T02:30:00Z",
+    "max_publish_time": "2026-01-31T22:30:00Z",
+    "min_start_time": "2025-12-28T21:00:00Z",
+    "max_start_time": "2026-02-02T21:00:00Z",
+    "columns": [
+      "dataset",
+      "publishTime",
+      "startTime",
+      "generation"
+    ]
+  },
+  "total_compressed_size_kb": 113.8
+}

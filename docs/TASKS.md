@@ -10,8 +10,8 @@
 
 ## Phase 1 — Data ingest (≈2.5h)
 - [x] T1.1 Explore both Elexon endpoints with small windows; save raw JSON under `backend/tests/fixtures/`. Done when: DOMAIN.md "To verify" list is answered with what was observed. ✓ Completed 2026-10-26: fixtures saved, DOMAIN.md updated with confirmed fields.
-- [ ] T1.2 `scripts/ingest.py`: chunked fetch (7-day chunks, 0.5 s delay) with retry/backoff, pydantic validation, dedupe (A6), UTC parsing, window from config (A1). FUELHH uses `settlementDateFrom/To`; WINDFOR uses `publishDateTimeFrom/To` only. Done when: runs end to end with `--refresh`, idempotent.
-- [ ] T1.3 Write snapshot (`actuals.csv.gz`, `forecasts.csv.gz`, `meta.json` with ingest time, counts, min/max times). Done when: committed, total size reported (expected ~140 KB gzipped).
+- [x] T1.2 `scripts/ingest.py`: chunked fetch (7-day chunks, 0.5 s delay) with retry/backoff, pydantic validation, dedupe (A6), UTC parsing, window from config (A1). FUELHH uses `settlementDateFrom/To`; WINDFOR uses `publishDateTimeFrom/To` only. Done when: runs end to end with `--refresh`, idempotent.
+- [x] T1.3 Write snapshot (`actuals.csv.gz`, `forecasts.csv.gz`, `meta.json` with ingest time, counts, min/max times). Done when: committed, total size reported (expected ~140 KB gzipped).
 - [ ] T1.4 Data quality report: vintages per day (expected 8), horizon min/median/max for WINDFOR, count of hours missing a half-hour actual (FUELHH gaps), Jan 1 coverage at 09:00 cutoff (expected: 24 of 24 hours covered), full coverage table 24×31=744 hours. Done when: report saved to `docs/DATA_REPORT.md` and anomalies listed.
 - [ ] T1.5 Loader module with schema validation and tests using fixtures. Done when: tests green, loader fails loudly on bad schema.
 
