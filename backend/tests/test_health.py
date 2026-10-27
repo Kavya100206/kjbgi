@@ -21,7 +21,9 @@ def test_meta_returns_snapshot_info() -> None:
     assert resp.status_code == 200
     body = resp.json()
     assert body["status"] == "ready"
-    assert body["actuals_rows_loaded"] == 1536
-    assert body["forecasts_rows_loaded"] == 19856
+    assert body["actuals_rows"] == 1536
+    assert body["forecasts_rows"] == 19856
     assert "ingested_at" in body
     assert "window" in body
+    assert "available_delivery_dates" in body
+    assert len(body["available_delivery_dates"]) == 31
