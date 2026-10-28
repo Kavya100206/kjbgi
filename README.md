@@ -2,9 +2,9 @@
 
 Vane is an operational analytics portal built for the day-ahead power-procurement desk of a UK energy utility. It evaluates National Grid ESO wind forecasts published via Elexon BMRS against settlement outturn across January 2026. The platform reconstructs the exact latest forecast available at the decision cutoff, computes empirical forecast accuracy, and surfaces volumetric risk cushions so trading teams can price forecast bias and weather volatility cleanly into day-ahead procurement.
 
-- **Live Application:** `[DEPLOYED_URL_PLACEHOLDER]`
+- **Live Application:** https://px9k2m.vercel.app
 - **Local Portal:** http://localhost:8080
-- **API Documentation:** http://localhost:8080/api/docs
+- **API Documentation:** https://px9k2m.vercel.app/api/docs (Local: http://localhost:8080/api/docs)
 
 ---
 
