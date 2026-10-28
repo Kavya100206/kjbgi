@@ -53,7 +53,7 @@ def test_proves_no_use_of_same_day_or_later_errors():
         confidence=0.80,
     )
 
-    # Verify results are 100% IDENTICAL
+    # Verify results are identical
     assert res_clean["history_days_used"] == res_poisoned["history_days_used"] == 9  # Days 1..9
     assert res_clean["is_fallback"] == res_poisoned["is_fallback"] is False
     assert res_clean["bias_used_mw"] == res_poisoned["bias_used_mw"] == 100.0

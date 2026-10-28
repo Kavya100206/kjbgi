@@ -6,7 +6,7 @@ For each target hour t on delivery date D (UTC date of startTime):
     cutoff(t) = (D - 1 day) at cutoff_hour:00:00 UTC
     selected_vintage = row with max(publishTime) <= cutoff(t) for that startTime
 
-No future/look-ahead data is ever used. Uses real observed publishTime timestamps only,
+Look-ahead is prevented by construction and covered by tests. Uses real observed publishTime timestamps only,
 never hardcoded schedules.
 """
 
@@ -110,7 +110,7 @@ def select_forecasts_at_cutoff(
     target_day = df["startTime"].dt.floor("1D")
     df["cutoff_time"] = target_day - pd.Timedelta(days=1) + pd.Timedelta(hours=cutoff_hour)
 
-    # Invariant: publishTime <= cutoff_time (strictly no look-ahead)
+    # Invariant: publishTime <= cutoff_time (look-ahead prevented by construction)
     eligible = df[df["publishTime"] <= df["cutoff_time"]].copy()
     if eligible.empty:
         return pd.DataFrame(

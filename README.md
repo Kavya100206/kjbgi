@@ -20,6 +20,8 @@ Access the UI at `http://localhost:8080`.
 
 ### Running Tests
 
+The test suite comprises 53 backend and 12 frontend tests, plus an independent cross-check script:
+
 ```bash
 # Backend pytest suite (53 tests: unit, integration, AC-3 compliance, cross-check verification)
 cd backend && uv run pytest -q
@@ -48,7 +50,7 @@ python scripts/diagnostics.py
 
 ## Analytical Approach
 
-1. **Vintages & Causal Cutoff:** Elexon WINDFOR forecasts are evaluated strictly by `publishTime`. For delivery hour $H$ on day $D$, Vane filters to the latest vintage published at or before the user's decision cutoff (default `09:00 UTC` on $D-1$). No future data leaks into decision curves.
+1. **Vintages & Causal Cutoff:** Elexon WINDFOR forecasts are evaluated strictly by `publishTime`. For delivery hour $H$ on day $D$, Vane filters to the latest vintage published at or before the user's decision cutoff (default `09:00 UTC` on $D-1$). Look-ahead is prevented by construction and covered by tests.
 2. **Hourly Pairing Rule (Assumption A7):** WINDFOR is published at hourly resolution; metered actuals (`FUELHH` with `fuelType == 'WIND'`) are reported per half-hour settlement period (:00 and :30). Hourly actual generation is computed as $\text{actual}_H = \frac{1}{2}(\text{FUELHH}_{H:00} + \text{FUELHH}_{H:30})$. If either half-hour is missing, the hour is excluded. Sensitivity analysis shows Option C vs Option A (H:00 only) alters MAE by $<0.7\%$ and bias by $<0.02\%$.
 3. **Sign Convention:** $\text{error} = \text{forecast} - \text{actual}$. Positive error indicates over-forecast (shortfall volume; utility under-procures).
 4. **Accuracy Metrics:** Calculated over complete January 2026 window ($n = 744$ hours, 100% coverage): MAE ($2,142\text{ MW}$), RMSE ($2,612\text{ MW}$), Mean Bias ($+1,852\text{ MW}$), and Normalized MAE ($18.5\%$).
@@ -100,7 +102,4 @@ python scripts/diagnostics.py
 
 ## AI Tools Used
 
-This project was built with assistance from **Google Antigravity** using `[MODEL_PLACEHOLDER: e.g. Gemini 3.8 Flash (High)]`.
-
-- **Role of AI:** Assisted with boilerplate scaffolding, test fixture parsing, typing, and initial drafting of domain calculations.
-- **Human Verification:** All mathematical formulations (Assumption A7 pairing, empirical quantile calculations, MSE decomposition), API contracts, edge-case assertions (AC-3 vintage cutoff), and empirical diagnostic findings were independently validated against raw Elexon data and verified via independent cross-check modules.
+This project was built with assistance from Google Antigravity (AI coding agent), used for scaffolding, implementation, tests and documentation. All analytical logic and numbers were reviewed and verified, including via an independent cross-check script.

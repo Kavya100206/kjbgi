@@ -13,8 +13,6 @@ frontend/dist/
 .vercel
 
 # Internal planning and documentation
-AGENTS.md
-KICKOFF_PROMPT.md
 docs/
 
 # Local export and submission artifacts

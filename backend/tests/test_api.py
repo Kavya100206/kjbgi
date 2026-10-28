@@ -49,7 +49,7 @@ def test_ac3_forecast_day_twenty_four_points_and_publish_times():
     for idx, row in enumerate(rows):
         assert row["hour"] == idx
         pub_dt = datetime.fromisoformat(row["publish_time"].replace("Z", "+00:00"))
-        # Invariant: strictly no look-ahead
+        # Invariant: look-ahead is prevented by construction and covered by tests
         assert pub_dt <= cutoff_limit, (
             f"Hour {idx} published at {pub_dt} after cutoff {cutoff_limit}"
         )

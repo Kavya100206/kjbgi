@@ -4,7 +4,7 @@ For a delivery day D, calculates an empirical error band [band_lo, band_hi] and
 the implied MW cushion.
 
 Core Invariant:
-    Strictly NO look-ahead. Only historical delivery days strictly BEFORE D (prior_date < D)
+    Look-ahead is prevented by construction and covered by tests. Only historical delivery days strictly BEFORE D (prior_date < D)
     at the same cutoff are used. If fewer than 3 prior days of history exist,
     fallback_flag is True.
 

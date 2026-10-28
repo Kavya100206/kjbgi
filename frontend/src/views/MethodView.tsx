@@ -116,7 +116,7 @@ export const MethodView: React.FC = () => {
           <div style={{ borderLeft: "3px solid var(--color-wind)", paddingLeft: "var(--space-3)" }}>
             <h3 style={{ fontSize: "0.95rem", fontWeight: 700 }}>A2. Decision Cutoff & Vintage Selection</h3>
             <p style={{ fontSize: "0.85rem", color: "var(--color-ink-muted)" }}>
-              The buyer decides on day D-1 at a user-selectable cutoff hour (default <strong>09:00 UTC</strong>). For target delivery hour <code>t</code> on day D, the decision forecast is the latest vintage with <code>publishTime &le; (D-1 at cutoff_hour:00 UTC)</code>. Strictly no look-ahead bias.
+              The buyer decides on day D-1 at a user-selectable cutoff hour (default <strong>09:00 UTC</strong>). For target delivery hour <code>t</code> on day D, the decision forecast is the latest vintage with <code>publishTime &le; (D-1 at cutoff_hour:00 UTC)</code>. Look-ahead is prevented by construction and covered by tests.
             </p>
           </div>
 
