@@ -73,10 +73,6 @@ python scripts/diagnostics.py
 │   ├── scripts/                   # Ingest and independent cross-check modules
 │   └── tests/                     # 53 automated tests and raw Elexon test fixtures
 ├── docker-compose.yml             # Single-command local full-stack runner
-├── docs/                          # Architecture decisions and diagnostic reports
-│   ├── DECISIONS.md               # Architectural decision records (D-001 through D-008)
-│   ├── DIAGNOSTICS.md             # Empirical bias diagnostics (time alignment, scale, stability)
-│   └── screenshots/               # Portal UI captures (1280px desktop and 375px mobile)
 ├── frontend/                      # React 18 + TypeScript + Vite frontend
 │   ├── src/
 │   │   ├── api/                   # Typed API client and schema interfaces

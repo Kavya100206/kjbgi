@@ -12,18 +12,12 @@ frontend/node_modules/
 frontend/dist/
 .vercel
 
-# Internal planning and agent instructions
+# Internal planning and documentation
 AGENTS.md
 KICKOFF_PROMPT.md
-docs/SPEC.md
-docs/PLAN.md
-docs/TASKS.md
-docs/VERIFICATION.md
-docs/TIME.md
-docs/DELIVERABLES.md
-docs/DATA_REPORT.md
-docs/DOMAIN.md
+docs/
 
 # Local export and submission artifacts
 scripts/make_submission.sh
 submission-export/
+.env*
