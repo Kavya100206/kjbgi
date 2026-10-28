@@ -124,7 +124,7 @@ export const DecisionView: React.FC = () => {
           <strong>Decision Context:</strong> Delivery day <strong>{formatDate(dayData.delivery_date)}</strong>, evaluated at <strong>{formatHour(dayData.cutoff_hour)} UTC on D-1</strong>.
           Selected vintage published at <strong>{formatDateTimeUTC(dayData.selected_vintage_publish_time)}</strong>.
         </div>
-        <span className="badge badge-wind">A7 Hourly Pairing (744h Jan Window)</span>
+        <span className="badge badge-wind">Hourly Pairing Rule (744h Jan Window)</span>
       </div>
 
       {isCustomCutoff && defaultDayData && defaultDayData.selected_vintage_publish_time === dayData.selected_vintage_publish_time && (
@@ -441,7 +441,7 @@ export const DecisionView: React.FC = () => {
           </table>
         </div>
         <div style={{ marginTop: "var(--space-3)", fontSize: "var(--font-size-xs)", color: "var(--color-ink-faint)" }}>
-          * Actuals are hindsight: arithmetic mean of FUELHH :00 and :30 generation periods per Assumption A7.
+          * Actuals are hindsight: arithmetic mean of FUELHH :00 and :30 generation periods per the hourly pairing rule.
         </div>
       </section>
     </div>
