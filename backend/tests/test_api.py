@@ -1,4 +1,4 @@
-"""Integration tests for all Vane FastAPI endpoints (T3.3).
+"""Integration tests for all Vane FastAPI endpoints.
 
 Verifies:
 - AC-3: 2026-01-15 @ 09:00 -> 24 rows, all publishTime <= 2026-01-14T09:00:00Z.

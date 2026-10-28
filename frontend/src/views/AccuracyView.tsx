@@ -197,6 +197,7 @@ export const AccuracyView: React.FC = () => {
         <h3 className="card-title">Benchmark: Meteorological Skill vs Persistence Baseline</h3>
         <p className="card-subtitle">
           Evaluated against honest causal persistence (D-2 actual at same hour) and oracle persistence (D-1).
+          Common sample <strong>n = 696 hours</strong> (3–31 Jan) due to 48h lag requirement (headline summary above uses all n = 744 hours).
         </p>
 
         <div className="table-container">
@@ -204,6 +205,7 @@ export const AccuracyView: React.FC = () => {
             <thead>
               <tr>
                 <th>Forecasting Model</th>
+                <th>Sample (n)</th>
                 <th>MAE (MW)</th>
                 <th>RMSE (MW)</th>
                 <th>Mean Bias</th>
@@ -214,6 +216,7 @@ export const AccuracyView: React.FC = () => {
             <tbody>
               <tr style={{ background: "var(--color-wind-light)", fontWeight: 600 }}>
                 <td>Elexon WINDFOR (at 09:00 Cutoff)</td>
+                <td>n = 696 (3–31 Jan)</td>
                 <td>{formatMW(2038)}</td>
                 <td>{formatMW(2514)}</td>
                 <td style={{ color: "var(--color-risk)" }}>+1,727 MW</td>
@@ -221,7 +224,8 @@ export const AccuracyView: React.FC = () => {
                 <td><span className="badge badge-wind">Production Model</span></td>
               </tr>
               <tr>
-                <td>Honest 48h Persistence (D-2 at same hour)</td>
+                <td><strong>Honest 48h Persistence (D-2 at same hour)</strong> [Honest Baseline]</td>
+                <td>n = 696 (3–31 Jan)</td>
                 <td>{formatMW(4184)}</td>
                 <td>{formatMW(5190)}</td>
                 <td>+148 MW</td>
@@ -230,6 +234,7 @@ export const AccuracyView: React.FC = () => {
               </tr>
               <tr style={{ color: "var(--color-ink-muted)" }}>
                 <td>Oracle 24h Persistence (D-1 at same hour)*</td>
+                <td>n = 720 (2–31 Jan)</td>
                 <td>{formatMW(4075)}</td>
                 <td>{formatMW(5259)}</td>
                 <td>+164 MW</td>
@@ -240,7 +245,7 @@ export const AccuracyView: React.FC = () => {
           </table>
         </div>
         <div style={{ fontSize: "var(--font-size-xs)", color: "var(--color-ink-faint)", marginTop: "var(--space-2)" }}>
-          * Oracle persistence uses D-1 actuals not yet published at the D-1 09:00 UTC decision cutoff. Honest baseline uses strictly prior D-2 actuals.
+          * 48h persistence is the <em>honest baseline</em> because D-1 actuals are unknown at decision cutoff. It requires 48h history, restricting common evaluation to 3–31 Jan (n=696). On this common sample, WINDFOR achieves 2,038 MW MAE (vs 2,142 MW on full n=744).
         </div>
       </section>
 

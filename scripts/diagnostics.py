@@ -1,4 +1,4 @@
-"""Phase 2.5 Diagnostics: Deep investigation of January 2026 forecast bias.
+"""Diagnostics: Deep investigation of January 2026 forecast bias.
 
 Tests:
 1. Hand-traceable example (2026-01-15T12:00:00Z at cutoff 09:00).

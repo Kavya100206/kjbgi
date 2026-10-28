@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Independent cross-check script (T2.5).
+"""Independent cross-check script.
 
 Independent calculation using plain pandas and numpy — does NOT import app.domain.
 Recomputes January 2026 headline accuracy metrics at 09:00 UTC cutoff under:

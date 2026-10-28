@@ -63,7 +63,7 @@ export const MethodView: React.FC = () => {
         </div>
       </section>
 
-      {/* Phase 2.5 Bias Diagnostics Finding */}
+      {/* Bias Diagnostics Finding */}
       <section className="card" style={{ marginBottom: "var(--space-6)", borderColor: "var(--color-actual)" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap" }}>
           <h2 className="card-title" style={{ color: "var(--color-ink)" }}>
@@ -72,7 +72,7 @@ export const MethodView: React.FC = () => {
           <span className="badge badge-risk">Empirical Diagnostic</span>
         </div>
         <p className="card-subtitle">
-          Phase 2.5 diagnostics confirmed that day-ahead WINDFOR forecasts at the 09:00 UTC cutoff ran systematically <strong>+1,851.90 MW (~16.0%) above</strong> actual generation across January 2026.
+          Empirical diagnostics confirmed that day-ahead WINDFOR forecasts at the 09:00 UTC cutoff ran systematically <strong>+1,851.90 MW (~16.0%) above</strong> actual generation across January 2026.
         </p>
 
         <div className="callout callout-warning">
@@ -154,7 +154,7 @@ export const MethodView: React.FC = () => {
               WINDFOR is published at hourly resolution; FUELHH is reported half-hourly (:00 and :30). Under Assumption A7, <code>actual_hourly(H) = mean(FUELHH[H:00], FUELHH[H:30])</code>. Both half-hours must exist.
             </p>
             <p style={{ fontSize: "0.85rem", color: "var(--color-ink-muted)", marginTop: "4px" }}>
-              <strong>Sensitivity Check (Option A vs Option C):</strong> In T2.5, comparing Option C (mean of H:00 and H:30) against Option A (H:00 only) across all 744 January hours showed a MAE difference of only <strong>&minus;14.64 MW (&minus;0.68%)</strong> and bias difference of <strong>&minus;0.38 MW (&minus;0.02%)</strong>. The choice of pairing rule does not materially alter accuracy conclusions.
+              <strong>Sensitivity Check (Option A vs Option C):</strong> In sensitivity analysis, comparing Option C (mean of H:00 and H:30) against Option A (H:00 only) across all 744 January hours showed a MAE difference of only <strong>&minus;14.64 MW (&minus;0.68%)</strong> and bias difference of <strong>&minus;0.38 MW (&minus;0.02%)</strong>. The choice of pairing rule does not materially alter accuracy conclusions.
             </p>
           </div>
         </div>

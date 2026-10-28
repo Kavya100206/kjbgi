@@ -1,6 +1,6 @@
-# Test Fixtures — raw Elexon API responses (T1.1)
+# Test Fixtures — raw Elexon API responses
 
-Saved during T1.1 exploration spike. All requests are unauthenticated GET to
+Saved during exploration. All requests are unauthenticated GET to
 `https://data.elexon.co.uk/bmrs/api/v1`.
 
 | File | Endpoint | Query params | Rows | Notes |

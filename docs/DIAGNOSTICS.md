@@ -1,4 +1,4 @@
-# Phase 2.5 Diagnostics: January 2026 Forecast Bias Investigation
+# Diagnostics: January 2026 Forecast Bias Investigation
 
 **Date:** 2026-10-27  
 **Artifact:** `docs/DIAGNOSTICS.md`  

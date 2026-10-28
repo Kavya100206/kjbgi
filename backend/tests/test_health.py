@@ -1,4 +1,4 @@
-"""Test for /api/health endpoint — T0.2 smoke test."""
+"""Test for /api/health endpoint."""
 
 from fastapi.testclient import TestClient
 

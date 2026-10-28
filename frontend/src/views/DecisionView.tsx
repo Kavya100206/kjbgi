@@ -60,6 +60,14 @@ export const DecisionView: React.FC = () => {
       }),
   });
 
+  // 4. If cutoff !== 9, fetch 09:00 forecast to detect whether vintage changed
+  const isCustomCutoff = controls.cutoffHour !== 9;
+  const { data: defaultDayData } = useQuery({
+    queryKey: ["forecastDay", controls.deliveryDate, 9],
+    queryFn: () => fetchForecastDay(controls.deliveryDate, 9),
+    enabled: isCustomCutoff,
+  });
+
   if (dayLoading || riskLoading) {
     return (
       <div className="app-container">
@@ -118,6 +126,22 @@ export const DecisionView: React.FC = () => {
         </div>
         <span className="badge badge-wind">A7 Hourly Pairing (744h Jan Window)</span>
       </div>
+
+      {isCustomCutoff && defaultDayData && defaultDayData.selected_vintage_publish_time === dayData.selected_vintage_publish_time && (
+        <div
+          className="callout"
+          style={{
+            marginBottom: "var(--space-4)",
+            background: "#fff9eb",
+            borderColor: "#f3cc80",
+            color: "#7a4b00",
+            fontSize: "0.875rem",
+          }}
+        >
+          <strong>Same forecast as 09:00:</strong> latest vintage published before this cutoff is{" "}
+          <strong>{formatDateTimeUTC(dayData.selected_vintage_publish_time)}</strong>. No newer National Grid forecast was published between that vintage and {formatHour(dayData.cutoff_hour)} UTC.
+        </div>
+      )}
 
       {/* KPI Cards */}
       <section className="kpi-row" aria-label="Day Summary KPIs">
